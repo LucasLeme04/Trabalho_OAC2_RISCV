@@ -8,6 +8,7 @@
 \usepackage{listings} % Pacote para blocos de código
 \usepackage{xcolor}   % Pacote para cores no código
 \usepackage{indentfirst}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
 
 % --- Configurações da página para melhor margem ---
 \geometry{
@@ -50,6 +51,7 @@
 \begin{titlepage}
     \centering
     
+    % --- Bloco 1: Cabeçalho com informações da Universidade ---
     \vspace*{1cm} 
     {\large \textbf{UNIVERSIDADE FEDERAL DE OURO PRETO - UFOP}}\\[0.5cm]
     {\normalsize \textbf{Instituto de Ciências Exatas e Aplicadas - ICEA}}\\[0.2cm]
@@ -57,12 +59,14 @@
     
     \vfill % Espaçamento flexível
     
+    % --- Bloco 2: Título do Trabalho ---
     \hrule\vspace{0.4cm}
     {\Huge \textbf{Implementação do Processador RISC-V em Verilog}}\\[0.4cm]
     \hrule
     
     \vfill % Espaçamento flexível
     
+    % --- Bloco 3: Autores ---
     \begin{minipage}{0.5\textwidth}
         \centering
         \large Lucas Amaral Leme (22.2.8005)\\[0.3cm]
@@ -71,6 +75,7 @@
     
     \vfill % Espaçamento flexível
     
+    % --- Bloco 4: Rodapé com Local e Data ---
     {\large \textbf{João Monlevade}}\\[0.5cm]
     {\large Agosto/2025}
     
@@ -85,6 +90,7 @@
 \noindent Este documento detalha a implementação de um processador de 32 bits com a arquitetura RISC-V, estruturado em um pipeline de cinco estágios (IF, ID, EX, MEM, WB). O projeto abrange a criação de todos os componentes do caminho de dados, incluindo memórias de instrução e dados, banco de registradores e a Unidade Lógica e Aritmética (ULA). Um foco central do trabalho foi o tratamento de conflitos (hazards) do pipeline, com a implementação de uma unidade de adiantamento (forwarding) para resolver hazards de dados e uma unidade de detecção de hazards dedicada.
 \end{abstract}
 
+
 % --- Seção de Introdução ---
 \section*{1. Introdução}
 \addcontentsline{toc}{section}{1. Introdução}
@@ -94,6 +100,9 @@ Este trabalho apresenta o desenvolvimento de um processador RISC-V, projetado em
 Para o desenvolvimento, utilizamos o Visual Studio Code como editor de código. A compilação foi realizada com o Icarus Verilog (iverilog) e a visualização das formas de onda foi feita com o GTKWave.
 
 Durante a implementação, focamos em construir as cinco etapas do pipeline (busca, decodificação, execução, memória e escrita) e em criar lógicas para resolver conflitos de dados e de controle, conhecidos como \textit{hazards}. Este relatório detalha a metodologia usada, a estrutura do projeto e os resultados obtidos na simulação.
+
+O código fonte completo do projeto, incluindo todos os módulos Verilog e arquivos de simulação, está disponível no seguinte repositório do GitHub: \href{https://github.com/LucasLeme04/Trabalho_OAC2_RISCV}{Acessar Repositório do Projeto}.
+
 
 % --- Seção de Metodologia ---
 \section*{2. Metodologia}
@@ -246,7 +255,7 @@ A Memória de Instrução, implementada no módulo \texttt{inst\_mem.v}, funcion
 
 Um bloco \texttt{initial} é utilizado para pré-carregar a memória com um programa de teste no início da simulação. O módulo também possui uma lógica de proteção que retorna uma instrução NOP caso o endereço do PC não esteja alinhado em 4 bytes ou esteja fora dos limites da memória. As entradas e saídas do módulo, bem como o programa de teste carregado, são detalhados a seguir.
 
-\vspace{0.5cm}
+\vspace{0.5cm} % Adiciona um pequeno espaço vertical
 \textbf{Entradas e Saídas do Módulo:}
 \begin{itemize}
     \item \textbf{Entradas:} \texttt{PC[31:0]}, \texttt{reset}
@@ -276,7 +285,7 @@ Diferente da anterior, a Memória de Dados (\texttt{data\_memory.v}) é uma RAM,
 \\[0.5cm]
 O módulo foi projetado para manipular dados de diferentes tamanhos, com suporte explícito para \textit{halfword} (16 bits), necessário para as instruções \texttt{lh} e \texttt{sh}. Para a leitura, a lógica de extensão de sinal é aplicada corretamente com base no bit mais significativo do dado lido. As características do módulo são resumidas abaixo.
 
-\vspace{0.5cm}
+\vspace{0.5cm} % Adiciona um pequeno espaço vertical
 \textbf{Entradas e Saídas do Módulo:}
 \begin{itemize}
     \item \textbf{Entradas:}
@@ -503,7 +512,7 @@ O último estágio, Write Back, finaliza a execução da instrução. O \texttt{
 
 Antes da integração final do processador, cada módulo foi rigorosamente testado de forma isolada para garantir seu funcionamento correto. Essa abordagem modular permitiu identificar e corrigir erros de forma localizada, reduzindo significativamente a complexidade da depuração no sistema completo. Para cada componente, desenvolvemos testbenches específicos que simulavam cenários críticos, incluindo casos extremos e condições de borda.
 
-% --- Seção de Resultados e Discussões ---
+
 \section*{3. Resultados e Discussão}
 \addcontentsline{toc}{section}{3. Resultados e Discussão}
 
@@ -533,7 +542,7 @@ Os registradores finais comprovam a execução correta:
     \item \texttt{x12 = 0x32 (50)} e \texttt{x13 = 0x0F (15)}: Resultado das instruções \texttt{addi} que carregam valores imediatos
 \end{itemize}
 
-\vspace{0.3cm}
+\vspace{0.3cm} % Espaço vertical após o tópico
 
 \noindent\textbf{Operações Aritméticas}
 \begin{itemize}
@@ -579,6 +588,7 @@ O primeiro cenário de teste verifica a execução de uma instrução aritmétic
 
 \begin{figure}[H]
     \centering
+    % --- COLOQUE O NOME DO SEU ARQUIVO DE IMAGEM AQUI ---
     \includegraphics[width=1\textwidth]{Cenário 1.png}
     \caption{Forma de onda da execução da instrução \texttt{sub x14, x12, x13}.}
     \label{fig:gtk_sub}
@@ -615,6 +625,7 @@ A Figura \ref{fig:gtk_fwd} captura o momento exato em que a Unidade de Forwardin
 
 \begin{figure}[H]
     \centering
+    % --- COLOQUE O NOME DO SEU ARQUIVO DE IMAGEM AQUI ---
     \includegraphics[width=1\textwidth]{Cenário2.png}
     \caption{Forma de onda demonstrando o forwarding do resultado de \texttt{sub} para \texttt{or}.}
     \label{fig:gtk_fwd}
@@ -640,6 +651,7 @@ A Figura \ref{fig:gtk_flush} captura o momento crítico em que a decisão do des
 
 \begin{figure}[H]
     \centering
+    % --- COLOQUE O NOME DO SEU ARQUIVO DE IMAGEM AQUI ---
     \includegraphics[width=1\textwidth]{Cenário 3.png}
     \caption{Forma de onda do flush no pipeline após um desvio condicional (\texttt{beq}) ser tomado.}
     \label{fig:gtk_flush}
