@@ -23,7 +23,7 @@ module inst_mem(
         Memory[4]  = 32'h01F6F813;        // andi x16, x13, 31  -> x16 = 15&31 = 15 ✓ ANDI
         Memory[5]  = 32'h00F01023;        // sh   x15, 0(x0)    -> store halfword x15 no addr 0 ✓ SH
         Memory[6]  = 32'h00001883;        // lh   x17, 0(x0)    -> load halfword do addr 0 ✓ LH
-        Memory[7]  = 32'h00285913;        // srli x18, x16, 2   -> x18 = 7>>2 = 1 ✓ SRL
+        Memory[7]  = 32'h00285913;        // srli x18, x16, 2   -> x18 = 15>>2 = 3 ✓ SRL
         Memory[8]  = 32'h00C60863;        // beq  x12, x12, +8  -> branch (50 == 50? YES) ✓ BEQ
         Memory[9]  = 32'h0FF00993;        // addi x19, x0, 255  -> shouldn't execute (flush)
         Memory[10] = 32'h00000013;        // nop (branch target)
@@ -39,4 +39,5 @@ module inst_mem(
     assign Instruction_Code = (PC[1:0] != 2'b00) ? 32'h00000013 : // Se não alinhado, retorna NOP
                             (word_addr_full >= 1024) ? 32'h00000013 : // Fora dos limites -> NOP
                             Memory[word_addr]; // Dentro dos limites -> instrução válida
+
 endmodule
