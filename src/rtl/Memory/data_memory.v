@@ -18,8 +18,8 @@ module data_memory (
 
     // Inicialização mais completa para testes
     initial begin
-        // Inicializa a memória com valores de teste
-        memory[0] = 32'h001D0000;  // Para sh x15, 3(x0) - halfword na posição 3
+        // Inicializa a memória com valores de teste - memória "limpa"
+        memory[0] = 32'h00000000;  // Memória inicialmente vazia
         memory[1] = 32'h00000000;  // Posição extra
         
         // Preenche o resto com zeros
