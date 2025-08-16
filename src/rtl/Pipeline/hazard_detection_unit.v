@@ -1,7 +1,3 @@
-/*
- * Hazard Detection Unit para o pipeline RISC-V - VERSÃO FINAL
- * Detecta e resolve hazards de dados e controle de forma explícita
- */
 module hazard_detection_unit (
     // Entradas do estágio ID
     input wire [4:0] rs1_id,
@@ -19,7 +15,7 @@ module hazard_detection_unit (
     output reg       if_id_write_enable,
     output reg       id_ex_flush,
     output reg       if_id_flush,
-    output reg       ex_mem_flush  // Novo: flush para EX/MEM quando branch é tomado
+    output reg       ex_mem_flush
 );
 
     always @(*) begin

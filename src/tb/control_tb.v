@@ -1,6 +1,5 @@
 // ------------------------------------------------------------------
 // Testbench para a Unidade de Controle Principal
-// Valida os sinais de controle para as 7 instruções do Grupo 9.
 // ------------------------------------------------------------------
 `timescale 1ns / 1ps
 
@@ -21,7 +20,7 @@ module control_tb;
     wire       mem_write_tb;
     wire       branch_tb;
 
-    // 3. Instanciação do Módulo (DUT)
+    // 3. Instanciação do Módulo
     control dut (
         .opcode(opcode_tb),
         .funct3(funct3_tb),
@@ -36,8 +35,7 @@ module control_tb;
         .branch(branch_tb)
     );
 
-    // 4. Task de Verificação - Para não repetir código
-    // Esta task compara todas as saídas com os valores esperados.
+    // 4. Task de Verificação
     task check_signals(
         input [1:0] exp_alu_src_a, input [1:0] exp_alu_src_b, input [1:0] exp_mem_to_reg,
         input [3:0] exp_alu_control, input exp_regwrite, input exp_mem_read, 
@@ -63,49 +61,49 @@ module control_tb;
         $display("INICIANDO TESTBENCH DA UNIDADE DE CONTROLE");
         $display("=================================================");
 
-        // --- Teste 1: SUB (R-type) ---
+        // --- Teste 1: SUB ---
         $display("\n>>> Testando instrucao SUB...");
         opcode_tb = 7'b0110011; funct3_tb = 3'b000; funct7_tb = 7'b0100000;
         #10;
         check_signals(2'b00, 2'b00, 2'b00, 4'b0110, 1, 0, 0, 0);
 
-        // --- Teste 2: OR (R-type) ---
+        // --- Teste 2: OR ---
         $display("\n>>> Testando instrucao OR...");
         opcode_tb = 7'b0110011; funct3_tb = 3'b110; funct7_tb = 7'b0000000;
         #10;
         check_signals(2'b00, 2'b00, 2'b00, 4'b0001, 1, 0, 0, 0);
 
-        // --- Teste 3: SRL (R-type) ---
+        // --- Teste 3: SRL ---
         $display("\n>>> Testando instrucao SRL...");
         opcode_tb = 7'b0110011; funct3_tb = 3'b101; funct7_tb = 7'b0000000;
         #10;
         check_signals(2'b00, 2'b00, 2'b00, 4'b1000, 1, 0, 0, 0);
 
-        // --- Teste 4: LH (I-type Load) ---
+        // --- Teste 4: LH ---
         $display("\n>>> Testando instrucao LH...");
-        opcode_tb = 7'b0000011; funct3_tb = 3'b001; // funct7 não importa
+        opcode_tb = 7'b0000011; funct3_tb = 3'b001;
         #10;
         check_signals(2'b00, 2'b01, 2'b01, 4'b0010, 1, 1, 0, 0);
 
-        // --- Teste 5: ANDI (I-type Aritmética) ---
+        // --- Teste 5: ANDI ---
         $display("\n>>> Testando instrucao ANDI...");
-        opcode_tb = 7'b0010011; funct3_tb = 3'b111; // funct7 não importa
+        opcode_tb = 7'b0010011; funct3_tb = 3'b111;
         #10;
         check_signals(2'b00, 2'b01, 2'b00, 4'b0000, 1, 0, 0, 0);
 
-        // --- Teste 6: SH (S-type Store) ---
+        // --- Teste 6: SH ---
         $display("\n>>> Testando instrucao SH...");
-        opcode_tb = 7'b0100011; funct3_tb = 3'b001; // funct7 não importa
+        opcode_tb = 7'b0100011; funct3_tb = 3'b001;
         #10;
         check_signals(2'b00, 2'b01, 2'b00, 4'b0010, 0, 0, 1, 0);
 
-        // --- Teste 7: BEQ (B-type Branch) ---
+        // --- Teste 7: BEQ ---
         $display("\n>>> Testando instrucao BEQ...");
-        opcode_tb = 7'b1100011; funct3_tb = 3'b000; // funct7 não importa
+        opcode_tb = 7'b1100011; funct3_tb = 3'b000;
         #10;
         check_signals(2'b00, 2'b00, 2'b00, 4'b0110, 0, 0, 0, 1);
         
-        // --- Teste 8: Opcode Desconhecido (Default) ---
+        // --- Teste 8: Opcode Desconhecido ---
         $display("\n>>> Testando Opcode Desconhecido (Default)...");
         opcode_tb = 7'b1111111; 
         #10;

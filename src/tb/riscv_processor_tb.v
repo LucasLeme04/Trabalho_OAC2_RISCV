@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 
-// Inclui o processador. O processador, por sua vez, já inclui todos os outros módulos.
 `include "rtl/riscv_processor.v"
 
 module riscv_processor_tb;
@@ -9,7 +8,7 @@ module riscv_processor_tb;
     reg clk;
     reg reset;
 
-    // 2. Instanciação do Processador (DUT - Design Under Test)
+    // 2. Instanciação do Processador
     riscv_processor dut (
         .clk(clk),
         .reset(reset)
@@ -18,7 +17,7 @@ module riscv_processor_tb;
     // 3. Geração de Clock
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // Clock de 100MHz (período de 10ns)
+        forever #5 clk = ~clk;
     end
 
     // 4. Bloco de Simulação e Verificação
@@ -32,12 +31,12 @@ module riscv_processor_tb;
         $display("=================================================");
         
         reset = 1;
-        #20; // Mantém o reset por 2 ciclos de clock
+        #20;
         reset = 0;
         
         $display("Reset liberado. O programa esta executando...");
         
-        // Deixa o programa rodar por um numero suficiente de ciclos
+
         #200; 
 
         // 5. Verificacao dos Resultados Finais
@@ -56,7 +55,7 @@ module riscv_processor_tb;
         $display("x19 (flush)  | Esperado: 0 (branch) | Recebido: %d", dut.reg_file_inst.reg_memory[19]);
         $display("-------------------------------------------------");
         
-        // Verificação detalhada do SH (Store Halfword)
+        // Verificação detalhada do SH
         $display("SH DETALHADO:");
         $display("  Valor em x15 (origem): %d (0x%04h)", dut.reg_file_inst.reg_memory[15], dut.reg_file_inst.reg_memory[15]);
         $display("  Memoria[0] completa: 0x%08h", dut.data_mem.memory[0]);
@@ -67,7 +66,7 @@ module riscv_processor_tb;
         else
             $display("  [ERRO] SH FALHOU: Valor incorreto!");
             
-        // Verificação detalhada do LH (Load Halfword)  
+        // Verificação detalhada do LH 
         $display("LH DETALHADO:");
         $display("  Valor carregado em x17: %d (0x%04h)", dut.reg_file_inst.reg_memory[17], dut.reg_file_inst.reg_memory[17]);
         if (dut.reg_file_inst.reg_memory[17] == dut.data_mem.memory[0][15:0])

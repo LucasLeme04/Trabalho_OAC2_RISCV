@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------
 // Testbench para a Memória de Dados (data_memory)
-// Foco: Escrita (sh) e Leitura (lh) de meia-palavra.
+// Escrita (sh) e Leitura (lh) de meia-palavra.
 // ------------------------------------------------------------------
 `timescale 1ns / 1ps
 
@@ -17,7 +17,7 @@ module data_memory_tb;
     reg         unsigned_load_tb;
     wire [31:0] read_data_tb;
 
-    // 2. Instanciação do Módulo (DUT)
+    // 2. Instanciação do Módulo
     data_memory dut (
         .clk(clk),
         .reset(reset),
@@ -33,7 +33,7 @@ module data_memory_tb;
     // 3. Geração de Clock
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // Período de 10ns
+        forever #5 clk = ~clk;
     end
 
     // 4. Bloco de Estímulos e Verificação
@@ -45,22 +45,21 @@ module data_memory_tb;
         // Inicializa os sinais
         reset = 0; mem_read_tb = 0; mem_write_tb = 0;
         address_tb = 32'b0; write_data_tb = 32'b0; 
-        size_tb = 2'b01; // Foco em halfword (lh, sh)
-        unsigned_load_tb = 0; // Para 'lh' (com sinal)
+        size_tb = 2'b01;
+        unsigned_load_tb = 0;
 
         // --- TESTE 1: Leitura de meia-palavra (lh) com valor positivo ---
         $display("\n>>> Teste 1: Lendo meia-palavra positiva (lh)...");
         // Lendo do endereço 8, onde está 32'h00001234. Queremos os 16 bits de baixo.
         address_tb = 32'h00000008;
         mem_read_tb = 1;
-        #10; // Espera a leitura combinacional
+        #10;
         $display("Lendo addr 0x%08h | Esperado: 0x00001234 | Saida: 0x%08h", address_tb, read_data_tb);
         mem_read_tb = 0;
-        @(posedge clk); // Avança um ciclo
+        @(posedge clk);
 
         // --- TESTE 2: Leitura de meia-palavra (lh) com valor negativo ---
         $display("\n>>> Teste 2: Lendo meia-palavra negativa (teste de sign-extend)...");
-        // Lendo do endereço 0x0E (12 + 2), onde está 32'hAABBCCDD. Queremos os 16 bits de cima (AABB).
         address_tb = 32'h0000000E;
         mem_read_tb = 1;
         #10;
@@ -70,21 +69,19 @@ module data_memory_tb;
 
         // --- TESTE 3: Escrita de meia-palavra (sh) e verificação ---
         $display("\n>>> Teste 3: Escrevendo meia-palavra (sh) e lendo de volta...");
-        // Parte A: Escrever o valor 0xCAFE no endereço 0x10 (word_addr=4, byte_offset=0)
         address_tb = 32'h00000010;
-        write_data_tb = 32'hFFFFCAFE; // A memória só vai pegar os 16 bits de baixo
+        write_data_tb = 32'hFFFFCAFE;
         mem_write_tb = 1;
         $display("Escrevendo 0xCAFE no endereco 0x%08h...", address_tb);
-        @(posedge clk); // << A ESCRITA ACONTECE AQUI!
-        mem_write_tb = 0; // Desliga a escrita para não reescrever no próximo ciclo
+        @(posedge clk);
+        mem_write_tb = 0;
 
-        // Parte B: Ler o valor de volta para confirmar a escrita (usando unsigned load)
-        unsigned_load_tb = 1; // Mudança para lhu (load halfword unsigned)
+        unsigned_load_tb = 1;
         mem_read_tb = 1;
         #10;
         $display("Lendo addr 0x%08h | Esperado: 0x0000CAFE | Saida: 0x%08h", address_tb, read_data_tb);
         mem_read_tb = 0;
-        unsigned_load_tb = 0; // Restaura para signed load
+        unsigned_load_tb = 0;
         
         $display("\n-------------------------------------------------");
         $display("FIM DO TESTBENCH.");

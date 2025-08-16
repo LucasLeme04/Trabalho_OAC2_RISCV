@@ -1,22 +1,13 @@
-/*
- * Registro EX/MEM do pipeline RISC-V
- * Armazena sinais de controle e dados entre os estágios EX e MEM
- *
- * Melhorias:
- * - Adicionado sinal de flush para hazards de controle
- * - Expandido mem_to_reg para 2 bits
- * - Reset assíncrono completo
- */
 module ex_mem_register (
     input wire clk,
     input wire reset,
-    input wire flush,           // Sinal para limpar o registro
+    input wire flush,
     
     // Sinais de Controle
     input wire        regwrite_in,
     input wire        mem_read_in,
     input wire        mem_write_in,
-    input wire [1:0]  mem_to_reg_in,    // Expandido para 2 bits
+    input wire [1:0]  mem_to_reg_in,
     input wire        branch_in,
     
     // Dados e Flags

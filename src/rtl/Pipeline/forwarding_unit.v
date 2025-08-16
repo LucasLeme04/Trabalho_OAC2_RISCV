@@ -1,26 +1,17 @@
-/*
- * Forwarding Unit para o pipeline RISC-V
- * Resolve hazards RAW (Read After Write) por encaminhamento de dados
- * 
- * Funcionamento:
- * - Verifica se os registradores fonte da instrução em EX foram alterados por instruções
- *   em MEM ou WB que ainda não foram escritas no banco de registradores
- * - Prioriza dados mais recentes (MEM sobre WB)
- */
 module forwarding_unit (
     // Registradores fonte da instrução em EX
-    input [4:0] rs1_ex,        // Primeiro operando
-    input [4:0] rs2_ex,        // Segundo operando
+    input [4:0] rs1_ex,
+    input [4:0] rs2_ex,
     
     // Informações das instruções em MEM e WB
-    input [4:0] rd_mem,        // Registrador destino em MEM
-    input       regwrite_mem,   // Sinal de escrita em MEM
-    input [4:0] rd_wb,         // Registrador destino em WB
-    input       regwrite_wb,    // Sinal de escrita em WB
+    input [4:0] rd_mem,
+    input       regwrite_mem,
+    input [4:0] rd_wb,
+    input       regwrite_wb,
     
     // Sinais de controle de forwarding
-    output reg [1:0] forward_a, // Controle para operando A
-    output reg [1:0] forward_b  // Controle para operando B
+    output reg [1:0] forward_a,
+    output reg [1:0] forward_b
 );
 
     always @(*) begin

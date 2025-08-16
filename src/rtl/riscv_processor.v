@@ -1,10 +1,3 @@
-/*
- * Processador RISC-V Pipeline de 5 estágios - VERSÃO FINAL CORRIGIDA
- * - Com todas as unidades e lógica de controle de hazard integradas
- */
-
-// Os `includes` são opcionais se você passar todos os arquivos para o compilador
-// Mas os manteremos aqui para referência do projeto.
 `include "rtl/ALU/alu.v"
 `include "rtl/Control Unit/control.v"
 `include "rtl/IFU/ifu.v"
@@ -26,15 +19,13 @@ module riscv_processor (
     input wire reset
 );
 
-    //================================================================
-    // Declaração de Fios (Wires) - ATUALIZADA
-    //================================================================
+    // Declaração de Fios //
 
     // --- Sinais entre IF e ID ---
     wire [31:0] pc_if, instruction_if;
     wire [31:0] pc_id, instruction_id;
     wire        if_id_flush;
-    wire        ex_mem_flush;  // Novo sinal para flush do EX/MEM
+    wire        ex_mem_flush;
 
     // --- Sinais gerados no estágio ID ---
     wire [31:0] imm_out_id;
@@ -83,13 +74,8 @@ module riscv_processor (
     // --- Sinais gerados no estágio WB ---
     wire [31:0] write_data_wb;
 
-    //================================================================
-    // Debug básico a cada clock
-    //================================================================
+    // Estágio IF - Busca de Instruções //
 
-    //================================================================
-    // Estágio IF - Busca de Instruções
-    //================================================================
     IFU ifu_inst (
         .clk(clk),
         .reset(reset),
@@ -100,23 +86,23 @@ module riscv_processor (
         .jump_target(32'b0),
         .Instruction_Code(instruction_if),
         .PC(pc_if),
-        .PC_plus_4() // PC+4 é passado pelo pipeline para JAL
+        .PC_plus_4()
     );
     
     if_id_register if_id_reg (
         .clk(clk),
         .reset(reset),
         .write_enable(if_id_write_enable),
-        .flush(if_id_flush), // Conectado ao novo sinal da Hazard Unit
+        .flush(if_id_flush),
         .instruction_in(instruction_if),
         .pc_in(pc_if),
         .instruction_out(instruction_id),
         .pc_out(pc_id)
     );
 
-    //================================================================
-    // Estágio ID - Decodificação
-    //================================================================
+
+    // Estágio ID - Decodificação //
+
     assign rs1_id = instruction_id[19:15];
     assign rs2_id = instruction_id[24:20];
     assign rd_id  = instruction_id[11:7];
@@ -125,7 +111,6 @@ module riscv_processor (
         .funct7(instruction_id[31:25]),
         .funct3(instruction_id[14:12]),
         .opcode(instruction_id[6:0]),
-        // Saídas Corrigidas
         .alu_src_a(alu_src_a_id),
         .alu_src_b(alu_src_b_id),
         .mem_to_reg(mem_to_reg_id),
@@ -159,19 +144,17 @@ module riscv_processor (
         .mem_read_ex(mem_read_ex),
         .rd_ex(rd_ex),
         .branch_taken(branch_taken_mem),
-        // Saídas Corrigidas
         .pc_write_enable(pc_write_enable),
         .if_id_write_enable(if_id_write_enable),
         .id_ex_flush(id_ex_bubble_enable),
         .if_id_flush(if_id_flush),
-        .ex_mem_flush(ex_mem_flush)  // Novo sinal
+        .ex_mem_flush(ex_mem_flush)
     );
 
     id_ex_register id_ex_reg (
         .clk(clk),
         .reset(reset),
         .flush(id_ex_bubble_enable),
-        // Entradas Corrigidas
         .regwrite_in(regwrite_id),
         .mem_read_in(mem_read_id),
         .mem_write_in(mem_write_id),
@@ -187,7 +170,6 @@ module riscv_processor (
         .rs1_in(rs1_id),
         .rs2_in(rs2_id),
         .rd_in(rd_id),
-        // Saídas Corrigidas
         .regwrite_out(regwrite_ex),
         .mem_read_out(mem_read_ex),
         .mem_write_out(mem_write_ex),
@@ -205,9 +187,8 @@ module riscv_processor (
         .rd_out(rd_ex)
     );
 
-    //================================================================
-    // Estágio EX - Execução
-    //================================================================
+    // Estágio EX - Execução //
+
     forwarding_unit fwd_unit (
         .rs1_ex(rs1_ex),
         .rs2_ex(rs2_ex),
@@ -219,17 +200,17 @@ module riscv_processor (
         .forward_b(forward_b)
     );
 
-    // MUX de Forwarding A (corrigido para LW)
+    // MUX de Forwarding A
     assign forwarded_data_a = (forward_a == 2'b00) ? read_data1_ex  :
                               (forward_a == 2'b01) ? write_data_wb  :
                               (forward_a == 2'b10) ? (mem_read_mem ? mem_read_data_mem : alu_result_mem) :
-                              32'b0; // Default
+                              32'b0;
 
-    // MUX de Forwarding B (corrigido para LW)  
+    // MUX de Forwarding B
     assign forwarded_data_b = (forward_b == 2'b00) ? read_data2_ex  :
                               (forward_b == 2'b01) ? write_data_wb  :
                               (forward_b == 2'b10) ? (mem_read_mem ? mem_read_data_mem : alu_result_mem) :
-                              32'b0; // Default
+                              32'b0;
 
     mux_alu_a alu_a_mux (
         .reg_data(forwarded_data_a),
@@ -258,7 +239,7 @@ module riscv_processor (
     ex_mem_register ex_mem_reg (
         .clk(clk),
         .reset(reset),
-        .flush(ex_mem_flush), // Agora usa o sinal de flush do branch
+        .flush(ex_mem_flush),
         .regwrite_in(regwrite_ex),
         .mem_read_in(mem_read_ex),
         .mem_write_in(mem_write_ex),
@@ -266,7 +247,7 @@ module riscv_processor (
         .branch_in(branch_ex),
         .alu_result_in(alu_result_ex),
         .branch_target_in(branch_target_ex),
-        .write_data_in(forwarded_data_b), // Dado para Store (sh)
+        .write_data_in(forwarded_data_b),
         .rd_in(rd_ex),
         .zero_flag_in(zero_flag_ex),
         .regwrite_out(regwrite_mem),
@@ -281,9 +262,7 @@ module riscv_processor (
         .zero_flag_out(zero_flag_mem)
     );
 
-    //================================================================
-    // Estágio MEM - Acesso à Memória
-    //================================================================
+    // Estágio MEM - Acesso à Memória //
     data_memory data_mem (
         .clk(clk),
         .reset(reset),
@@ -291,8 +270,8 @@ module riscv_processor (
         .write_data(write_data_mem),
         .mem_read(mem_read_mem),
         .mem_write(mem_write_mem),
-        .size(2'b01), // Simplificado para halfword (lh, sh)
-        .unsigned_load(1'b0), // Simplificado para signed (lh)
+        .size(2'b01),
+        .unsigned_load(1'b0),
         .read_data(mem_read_data_mem)
     );
 
@@ -307,7 +286,7 @@ module riscv_processor (
         .mem_to_reg_in(mem_to_reg_mem),
         .mem_read_data_in(mem_read_data_mem),
         .alu_result_in(alu_result_mem),
-        .pc_plus_4_in(32'b0), // Conectar se JAL for implementado
+        .pc_plus_4_in(32'b0),
         .rd_in(rd_mem),
         .regwrite_out(regwrite_wb),
         .mem_to_reg_out(mem_to_reg_wb),
@@ -317,20 +296,14 @@ module riscv_processor (
         .rd_out(rd_wb)
     );
 
-    //================================================================
-    // Estágio WB - Write Back
-    //================================================================
+    // Estágio WB - Write Back //
     mux_writeback wb_mux (
         .alu_result(alu_result_wb),
         .mem_data(mem_read_data_wb),
         .pc_plus_4(pc_plus_4_wb),
-        .immediate(32'b0), // Não usado
+        .immediate(32'b0),
         .mem_to_reg(mem_to_reg_wb),
         .write_data(write_data_wb)
     );
-
-    //================================================================
-    // Bloco de DEBUG: Rastreamento do sinal RegWrite
-    //================================================================
 
 endmodule

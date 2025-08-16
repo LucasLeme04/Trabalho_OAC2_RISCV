@@ -1,4 +1,3 @@
-// reg_file.v - VERSÃO FINAL E CORRETA PARA PIPELINE
 module reg_file (
     input clock,
     input reset,
@@ -21,7 +20,7 @@ module reg_file (
         end
     end
 
-    // Leitura com Forwarding Interno para evitar hazards Write-Read
+    // Leitura com Forwarding Interno
     assign read_data1 = (read_reg_num1 == 5'b00000) ? 32'b0 : 
                         (regwrite && (write_reg == read_reg_num1) && (write_reg != 5'b00000)) ? write_data :
                         reg_memory[read_reg_num1];
@@ -30,7 +29,6 @@ module reg_file (
                         (regwrite && (write_reg == read_reg_num2) && (write_reg != 5'b00000)) ? write_data :
                         reg_memory[read_reg_num2];
 
-    // O bloco 'initial' é bom para simulação, pode mantê-lo
     initial begin
         for (integer i = 0; i < 32; i = i + 1) begin
             reg_memory[i] = 32'b0;

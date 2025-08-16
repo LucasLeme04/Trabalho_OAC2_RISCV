@@ -3,14 +3,14 @@
 module IFU(
     input wire clk,
     input wire reset,
-    input wire stall,           // Novo: sinal de stall do hazard unit
+    input wire stall,
     input wire branch_taken,
-    input wire jump_taken,      // Novo: sinal para instruções de jump
+    input wire jump_taken,
     input wire [31:0] branch_target,
-    input wire [31:0] jump_target, // Novo: alvo para jumps
+    input wire [31:0] jump_target,
     output wire [31:0] Instruction_Code,
     output reg [31:0] PC,
-    output wire [31:0] PC_plus_4 // Novo: PC+4 para instruções JAL
+    output wire [31:0] PC_plus_4
 );
     // Lógica do próximo PC
     wire [31:0] next_pc;
@@ -32,7 +32,7 @@ module IFU(
     always @(posedge clk) begin
         if (reset)
             PC <= 32'h0000_0000;
-        else if (!stall)  // Só atualiza se não houver stall
+        else if (!stall)
             PC <= next_pc;
     end
 endmodule

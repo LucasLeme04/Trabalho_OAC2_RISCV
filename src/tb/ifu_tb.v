@@ -1,6 +1,5 @@
 /*
 Testbench para a Instruction Fetch Unit (ifu.v)
-Testa a integracao completa de busca de instrucoes
 */
 
 `timescale 1ns/1ps
@@ -23,7 +22,6 @@ module ifu_tb;
         .Instruction_Code(Instruction_Code)
     );
     
-    // Geracao do clock (periodo de 10ns = 100MHz)
     always begin
         clk = 1'b0;
         #5;
@@ -48,7 +46,7 @@ module ifu_tb;
         // Teste 1: Reset e inicializacao
         $display("Teste 1: Reset e inicializacao da IFU");
         reset = 1'b1;
-        #10;  // Um ciclo de clock
+        #10;
         $display("Reset ativo - PC deveria estar em 00000000");
         reset = 1'b0;
         #10;
@@ -80,7 +78,7 @@ module ifu_tb;
         #10;  // Ciclo 7
         $display("Ciclo 7 - Instrucao: %h (BEQ)\n", Instruction_Code);
         
-        // Teste 3: Branch tomado (simula BEQ verdadeiro)
+        // Teste 3: Branch tomado
         $display("Teste 3: Branch tomado (BEQ verdadeiro)");
         branch_taken = 1'b1;
         branch_target = 32'h00000008;  // Volta para instrucao SUB

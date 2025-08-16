@@ -1,13 +1,12 @@
-// control.v - VERSÃO CORRIGIDA E ATUALIZADA
 module control(
     input [6:0] funct7,
     input [2:0] funct3,
     input [6:0] opcode,
     
-    // --- SAÍDAS DE CONTROLE ATUALIZADAS ---
-    output reg [1:0] alu_src_a,      // Controle do MUX A da ALU (00: Reg, 01: PC)
-    output reg [1:0] alu_src_b,      // Controle do MUX B da ALU (00: Reg, 01: Imm)
-    output reg [1:0] mem_to_reg,     // Controle do MUX de Write-Back (00: ALU, 01: Mem)
+    // --- SAÍDAS DE CONTROLE ---
+    output reg [1:0] alu_src_a,
+    output reg [1:0] alu_src_b,
+    output reg [1:0] mem_to_reg,
     output reg [3:0] alu_control,
     output reg       regwrite,
     output reg       mem_read,
@@ -16,11 +15,10 @@ module control(
 );
 
     always @(*) begin
-        // --- VALORES PADRÃO (SEGUROS, EQUIVALENTE A UM NOP) ---
         alu_src_a   = 2'b00;
         alu_src_b   = 2'b00;
         mem_to_reg  = 2'b00;
-        alu_control = 4'b1111; // Operação NOP na ULA
+        alu_control = 4'b1111;
         regwrite    = 0;
         mem_read    = 0;
         mem_write   = 0;

@@ -1,25 +1,16 @@
-/*
- * Registro MEM/WB do pipeline RISC-V
- * Armazena sinais de controle e dados entre os estágios MEM e WB
- *
- * Melhorias:
- * - Expandido mem_to_reg para 2 bits para suportar mais fontes de writeback
- * - Adicionado sinal de flush para consistência
- * - Reset assíncrono completo
- */
 module mem_wb_register (
     input wire clk,
     input wire reset,
-    input wire flush,           // Sinal para limpar o registro (consistência)
+    input wire flush,
     
     // Sinais de Controle
     input wire        regwrite_in,
-    input wire [1:0]  mem_to_reg_in,    // Expandido para 2 bits
+    input wire [1:0]  mem_to_reg_in,
     
     // Dados
     input wire [31:0] mem_read_data_in,
     input wire [31:0] alu_result_in,
-    input wire [31:0] pc_plus_4_in,     // Adicionado para suporte a JAL
+    input wire [31:0] pc_plus_4_in,
     input wire [4:0]  rd_in,
 
     // Saídas para o estágio WB
@@ -27,7 +18,7 @@ module mem_wb_register (
     output reg [1:0]  mem_to_reg_out,
     output reg [31:0] mem_read_data_out,
     output reg [31:0] alu_result_out,
-    output reg [31:0] pc_plus_4_out,    // Adicionado para suporte a JAL
+    output reg [31:0] pc_plus_4_out,
     output reg [4:0]  rd_out
 );
 

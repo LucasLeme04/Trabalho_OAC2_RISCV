@@ -1,6 +1,5 @@
 // ------------------------------------------------------------------
 // Testbench para o Banco de Registradores (Register File)
-// Foco: Escrita, leitura, reset, proteção de x0 e forwarding interno.
 // ------------------------------------------------------------------
 `timescale 1ns / 1ps
 
@@ -33,7 +32,6 @@ module reg_file_tb;
     );
 
     // 4. Geração de Clock
-    // O clock começa em 0 e inverte a cada 5ns, gerando um período de 10ns (100 MHz)
     initial begin
         clock = 0;
         forever #5 clock = ~clock;

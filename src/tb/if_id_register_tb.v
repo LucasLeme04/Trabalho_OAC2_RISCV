@@ -16,7 +16,7 @@ module if_id_register_tb;
     wire [31:0] instruction_out_tb;
     wire [31:0] pc_out_tb;
 
-    // 2. Instanciação do Módulo (DUT)
+    // 2. Instanciação do Módulo
     if_id_register dut (
         .clk(clk),
         .reset(reset),
@@ -31,7 +31,7 @@ module if_id_register_tb;
     // 3. Geração de Clock
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // Período de 10ns
+        forever #5 clk = ~clk;
     end
 
     // 4. Bloco de Estímulos e Verificação
@@ -43,7 +43,7 @@ module if_id_register_tb;
         // --- TESTE 1: Reset Assincrono ---
         $display("\n>>> Teste 1: Reset Assincrono");
         reset = 1;
-        #10; // Mantém o reset ativo por 10ns
+        #10;
         $display("Reset Ativo | Saida PC: 0x%h | Saida Instrucao: 0x%h", pc_out_tb, instruction_out_tb);
         reset = 0;
         @(posedge clk);
@@ -59,7 +59,7 @@ module if_id_register_tb;
         #1; // Delay para permitir que as saídas atualizem
         $display("Ciclo 2: Saidas atualizadas -> PC: 0x%h, INST: 0x%h", pc_out_tb, instruction_out_tb);
 
-        // --- TESTE 3: Stall (Hold) ---
+        // --- TESTE 3: Stall ---
         $display("\n>>> Teste 3: Stall/Hold (write_enable = 0)");
         write_enable_tb <= 0; // Desabilita a escrita (stall)
         instruction_in_tb <= 32'hBBBBBBBB; // Novas entradas que devem ser ignoradas

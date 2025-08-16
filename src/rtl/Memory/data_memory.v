@@ -5,8 +5,8 @@ module data_memory (
     input wire [31:0] write_data,
     input wire mem_read,
     input wire mem_write,
-    input wire [1:0] size,        // 00: byte, 01: halfword, 10: word
-    input wire unsigned_load,     // 0: sign-extend, 1: zero-extend
+    input wire [1:0] size,
+    input wire unsigned_load,
     output reg [31:0] read_data
 );
 
@@ -18,7 +18,6 @@ module data_memory (
 
     // Inicialização mais completa para testes
     initial begin
-        // Inicializa a memória com valores de teste - memória "limpa"
         memory[0] = 32'h00000000;  // Memória inicialmente vazia
         memory[1] = 32'h00000000;  // Posição extra
         
@@ -32,7 +31,7 @@ module data_memory (
     always @(*) begin
         if (mem_read) begin
             case (size)
-                2'b01: begin // halfword (lh)
+                2'b01: begin
                     case (byte_offset)
                         2'b00: read_data = unsigned_load ? 
                                         {16'b0, memory[word_addr][15:0]} :
@@ -43,7 +42,6 @@ module data_memory (
                         default: read_data = 32'h00000000;
                     endcase
                 end
-                // Adicione outros tamanhos aqui se necessário
                 default: read_data = 32'h00000000;
             endcase
         end else begin
@@ -55,13 +53,12 @@ module data_memory (
     always @(posedge clk) begin
         if (mem_write) begin
             case (size)
-                2'b01: begin // sh (halfword)
+                2'b01: begin
                     case (byte_offset)
                         2'b00: memory[word_addr][15:0] <= write_data[15:0];
                         2'b10: memory[word_addr][31:16] <= write_data[15:0];
                     endcase
                 end
-                // Adicione outros tamanhos aqui se necessário
             endcase
         end
     end
